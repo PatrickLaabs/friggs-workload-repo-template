@@ -1,0 +1,28 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: argocd-image-updater-components
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: '10'
+spec:
+  project: default
+  source:
+    repoURL: 'https://argoproj.github.io/argo-helm'
+    targetRevision: 0.9.1
+    helm:
+      releaseName: argocd-image-updater
+      values: |-
+        image:
+          repository: quay.io/argoprojlabs/argocd-image-updater
+          gitCommitUser: "PatrickLaabs"
+          gitCommitMail: "patrick.laabs@me.com"
+          gitCommitTemplate: "Updating Images"
+    chart: argocd-image-updater
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: argocd
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
